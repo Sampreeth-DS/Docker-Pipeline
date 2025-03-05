@@ -10,7 +10,7 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                git credentialsId: GIT_CREDENTIALS, url: 'https://github.com/Sampreeth-DS/Docker-Pipeline.git'
+                git credentialsId: GIT_CREDENTIALS, url: 'https://github.com/Sampreeth-DS/Docker-Pipeline'
 
                 script{
                     script {
