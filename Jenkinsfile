@@ -10,23 +10,8 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                git credentialsId: GIT_CREDENTIALS, url: 'https://github.com/Sampreeth-DS/Docker-Pipeline.git'
+                git branch: 'main', credentialsId: GIT_CREDENTIALS, url: 'https://github.com/Sampreeth-DS/Docker-Pipeline.git'
 
-                script{
-                    script {
-                    def versionFile = readFile('version.txt').trim()
-                    def versionParts = versionFile.tokenize('.')
-                    def newVersion = "${versionParts[0]}.${versionParts[1].toInteger() + 1}"
-                    writeFile file: 'version.txt', text: newVersion
-                    env.NEW_VERSION = newVersion
-                    echo "New Docker Image Version: $NEW_VERSION"
-                    }
-                }
-            }
-        }
-
-        stage('Read and Increment Version') {
-            steps {
                 script {
                     def versionFile = readFile('version.txt').trim()
                     def versionParts = versionFile.tokenize('.')
@@ -49,9 +34,7 @@ pipeline {
         stage('Push Image to Docker Hub') {
             steps {
                 withDockerRegistry([credentialsId: DOCKER_CREDENTIALS, url: '']) {
-                    sh "docker login -u your-dockerhub-username -p \$(echo \$DOCKER_PASSWORD | base64 --decode)"
-                }
-                script {
+                    sh "echo \$DOCKER_PASSWORD | docker login -u \$DOCKER_USER --password-stdin"
                     sh "docker push $DOCKER_IMAGE:$NEW_VERSION"
                     sh "docker rmi $DOCKER_IMAGE:$NEW_VERSION"
                 }
@@ -67,7 +50,7 @@ pipeline {
                             git config --global user.name "Jenkins CI"
                             git add version.txt
                             git commit -m "Update version to $NEW_VERSION"
-                            git push https://$GIT_USER:$GIT_PASS@github.com/github.com/Sampreeth-DS/Docker-Pipeline.git HEAD:main
+                            git push https://$GIT_USER:$GIT_PASS@github.com/Sampreeth-DS/Docker-Pipeline.git HEAD:main
                         """
                     }
                 }
