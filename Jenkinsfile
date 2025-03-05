@@ -10,7 +10,7 @@ pipeline {
     stages {
         stage('Clone Git Repository') {
             steps {
-                git branch: 'main', credentialsId: 'github-credentials', url: 'https://github.com/Sampreeth-DS/Docker-Pipeline.git'
+                git branch: 'main', url: 'https://github.com/Sampreeth-DS/Docker-Pipeline.git'
 
                 script {
                     def versionFile = readFile('version.txt').trim()
