@@ -8,7 +8,7 @@ pipeline {
     }
 
     stages {
-        stage('Clone Repository') {
+        stage('Clone Git Repository') {
             steps {
                 git branch: 'main', credentialsId: GIT_CREDENTIALS, url: 'https://github.com/Sampreeth-DS/Docker-Pipeline.git'
 
@@ -20,7 +20,7 @@ pipeline {
                     env.NEW_VERSION = newVersion
                     echo "New Docker Image Version: $NEW_VERSION"
                 }
-                
+
                 withCredentials([usernamePassword(credentialsId: GIT_CREDENTIALS, usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
                     script {
                         sh """
@@ -49,6 +49,24 @@ pipeline {
                     sh "docker push $DOCKER_IMAGE:$NEW_VERSION"
                     sh "docker rmi $DOCKER_IMAGE:$NEW_VERSION"
                 }
+            }
+        }
+
+        stage('Deployment in Dev Environment') {
+            steps {
+                
+            }
+        }
+
+        stage('Deployment in Test Environment') {
+            steps {
+                
+            }
+        }
+
+        stage('Deployment in Prod Environment') {
+            steps {
+                
             }
         }
     }
