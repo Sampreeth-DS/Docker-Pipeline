@@ -51,23 +51,5 @@ pipeline {
                 }
             }
         }
-
-        stage('Deployment in Dev Environment') {
-            steps {
-                
-            }
-        }
-
-        stage('Deployment in Test Environment') {
-            steps {
-                
-            }
-        }
-
-        stage('Deployment in Prod Environment') {
-            steps {
-                
-            }
-        }
     }
 }
