@@ -33,11 +33,9 @@ pipeline {
 
         stage('Push Image to Docker Hub') {
             steps {
-                withDockerRegistry([credentialsId: DOCKER_CREDENTIALS]) {
-                    script {
-                        sh "docker push $DOCKER_IMAGE:$NEW_VERSION"
-                        sh "docker rmi $DOCKER_IMAGE:$NEW_VERSION"
-                    }
+                withDockerRegistry([credentialsId: DOCKER_CREDENTIALS, url: '']) {
+                    sh "docker push $DOCKER_IMAGE:$NEW_VERSION"
+                    sh "docker rmi $DOCKER_IMAGE:$NEW_VERSION"
                 }
             }
         }
