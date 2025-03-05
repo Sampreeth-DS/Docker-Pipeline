@@ -49,13 +49,6 @@ pipeline {
                     sh "docker push $DOCKER_IMAGE:$NEW_VERSION"
                     sh "docker rmi $DOCKER_IMAGE:$NEW_VERSION"
                 }
-                def approval = input(
-                        message: 'Approve or Reject deployment to Dev Environment?',
-                        parameters: [choice(name: 'Decision', choices: ['Approve', 'Reject'], description: 'Select the action')]
-                    )
-                    if (approval == 'Reject') {
-                        error("Deployment is not done!!!")
-                    }
             }
         }
     }
