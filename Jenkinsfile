@@ -20,6 +20,18 @@ pipeline {
                     env.NEW_VERSION = newVersion
                     echo "New Docker Image Version: $NEW_VERSION"
                 }
+                
+                withCredentials([usernamePassword(credentialsId: GIT_CREDENTIALS, usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
+                    script {
+                        sh """
+                            git config --global user.email "sampreethdsgowda@gmail.com"
+                            git config --global user.name "Jenkins CI"
+                            git add version.txt
+                            git commit -m "Update version to $NEW_VERSION"
+                            git push https://$GIT_USER:$GIT_PASS@github.com/Sampreeth-DS/Docker-Pipeline.git HEAD:main
+                        """
+                    }
+                }
             }
         }
 
@@ -36,22 +48,6 @@ pipeline {
                 withDockerRegistry([credentialsId: DOCKER_CREDENTIALS, url: '']) {
                     sh "docker push $DOCKER_IMAGE:$NEW_VERSION"
                     sh "docker rmi $DOCKER_IMAGE:$NEW_VERSION"
-                }
-            }
-        }
-
-        stage('Commit & Push Updated Version File') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: GIT_CREDENTIALS, usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
-                    script {
-                        sh """
-                            git config --global user.email "sampreethdsgowda@gmail.com"
-                            git config --global user.name "Jenkins CI"
-                            git add version.txt
-                            git commit -m "Update version to $NEW_VERSION"
-                            git push https://$GIT_USER:$GIT_PASS@github.com/Sampreeth-DS/Docker-Pipeline.git HEAD:main
-                        """
-                    }
                 }
             }
         }
