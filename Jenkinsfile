@@ -50,6 +50,11 @@ pipeline {
                     sh "docker push $DOCKER_IMAGE:$NEW_VERSION"
                     sh "docker rmi $DOCKER_IMAGE:$NEW_VERSION"
                 }
+            }
+        }
+
+        stage('Approval for the deployment') {
+            steps {
                 script {
                     def userInput = input message: "Do you want to deploy this version?", parameters: [
                         choice(name: 'Approval', choices: ['Approve', 'Reject'], description: 'Select Approve to proceed or Reject to stop.')
