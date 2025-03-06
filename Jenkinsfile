@@ -48,6 +48,7 @@ pipeline {
             steps {
                 withDockerRegistry([credentialsId: DOCKER_CREDENTIALS, url: '']) {
                     sh "docker push $DOCKER_IMAGE:$NEW_VERSION"
+                    sh "docker tag $DOCKER_IMAGE:$NEW_VERSION $DOCKER_IMAGE:latest"
                     sh "docker rmi $DOCKER_IMAGE:$NEW_VERSION"
                 }
             }
@@ -70,9 +71,7 @@ pipeline {
         stage('Deploying Application in DEV env') {
             steps {
                 script {
-                    sh """
-                        helm upgrade --install docker-app $HELM_CHART_PATH -n dev --set image.tag=$NEW_VERSION
-                    """
+                    sh "helm upgrade --install python-app $HELM_CHART_PATH -n dev --set image.tag=$NEW_VERSION"
                 }
             }
         }
