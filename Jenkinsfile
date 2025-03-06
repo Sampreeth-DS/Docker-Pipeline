@@ -4,7 +4,8 @@ pipeline {
     environment {
         DOCKER_IMAGE = "sampreethds10/docker-app"
         DOCKER_CREDENTIALS = 'docker-hub-credentials'
-        GIT_CREDENTIALS = 'github-credentials' 
+        GIT_CREDENTIALS = 'github-credentials'
+        HELM_CHART_PATH = './python-app'
     }
 
     stages {
@@ -49,7 +50,27 @@ pipeline {
                     sh "docker push $DOCKER_IMAGE:$NEW_VERSION"
                     sh "docker rmi $DOCKER_IMAGE:$NEW_VERSION"
                 }
+                script {
+                    def userInput = input message: "Do you want to deploy this version?", parameters: [
+                        choice(name: 'Approval', choices: ['Approve', 'Reject'], description: 'Select Approve to proceed or Reject to stop.')
+                    ]
+
+                    if (userInput == 'Reject') {
+                        error("Deployment Rejected. Stopping Pipeline.")
+                    }
+                }
             }
-        }  
+        }
+
+        stage('Deploying Application in DEV env') {
+            steps {
+                script {
+                    sh """
+                        kubectl create namespace dev --dry-run=client -o yaml | kubectl apply -f -
+                        helm upgrade --install docker-app $HELM_CHART_PATH -n dev --set image.tag=$NEW_VERSION
+                    """
+                }
+            }
+        }
     }
 }
