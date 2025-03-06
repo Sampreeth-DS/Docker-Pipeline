@@ -57,7 +57,7 @@ pipeline {
             steps {
                 script {
                     def userInput = input message: "Do you want to deploy this version?", parameters: [
-                        choice(choices: ['Approve', 'Reject'], description: 'Select Approve to proceed or Reject to stop.')
+                        choice(name: 'Approval', choices: ['Approve', 'Reject'], description: 'Select Approve to proceed or Reject to stop.')
                     ]
 
                     if (userInput == 'Reject') {
