@@ -81,6 +81,7 @@ pipeline {
                     }
                 }
             }
+        }
 
         stage('Approval from the DEV team') {
             steps {
@@ -100,7 +101,7 @@ pipeline {
         stage('Deploying Application in TEST env') {
             steps {
                 script {
-                    try{
+                    try {
                         sh "helm upgrade --install python-app $HELM_CHART_PATH -n test --set image.tag=$NEW_VERSION"
                     }
                     catch (Exception e) {
@@ -109,6 +110,7 @@ pipeline {
                     }
                 }
             }
+        }
 
         stage('Approval from TEST team') {
             steps {
@@ -128,7 +130,7 @@ pipeline {
         stage('Deploying Application in PROD env') {
             steps {
                 script {
-                    try{
+                    try {
                         sh "helm upgrade --install python-app $HELM_CHART_PATH -n prod --set image.tag=$NEW_VERSION"
                     }
                     catch (Exception e) {
