@@ -50,6 +50,6 @@ pipeline {
                     sh "docker rmi $DOCKER_IMAGE:$NEW_VERSION"
                 }
             }
-        }
+        }  
     }
 }
