@@ -72,7 +72,69 @@ pipeline {
         stage('Deploying Application in DEV env') {
             steps {
                 script {
-                    sh "helm upgrade --install python-app $HELM_CHART_PATH -n dev --set image.tag=$NEW_VERSION"
+                    try {
+                        sh "helm upgrade --install python-app $HELM_CHART_PATH -n dev --set image.tag=$NEW_VERSION"
+                    }
+                    catch (Exception e) {
+                        sh "helm rollback python-app -n dev"
+                        error("Dev deployment failed! Rolling back Dev and stopping pipeline.")
+                    }
+                }
+            }
+
+        stage('Approval from the DEV team') {
+            steps {
+                script {
+                    def userInput = input message: "Do you want to approve this version?", parameters: [
+                        choice(name: 'Approval', choices: ['Approve', 'Reject'], description: 'Select Approve to proceed or Reject to stop.')
+                    ]
+
+                    if (userInput == 'Reject') {
+                        sh "helm rollback python-app -n dev"
+                        error("Dev deployment failed! Rolling back Dev and stopping pipeline.")
+                    }
+                }
+            }
+        }
+
+        stage('Deploying Application in TEST env') {
+            steps {
+                script {
+                    try{
+                        sh "helm upgrade --install python-app $HELM_CHART_PATH -n test --set image.tag=$NEW_VERSION"
+                    }
+                    catch (Exception e) {
+                        sh "helm rollback python-app -n test"
+                        error("Test deployment failed! Rolling back Test and stopping pipeline.")
+                    }
+                }
+            }
+
+        stage('Approval from TEST team') {
+            steps {
+                script {
+                    def userInput = input message: "Do you want to approve this version?", parameters: [
+                        choice(name: 'Approval', choices: ['Approve', 'Reject'], description: 'Select Approve to proceed or Reject to stop.')
+                    ]
+
+                    if (userInput == 'Reject') {
+                        sh "helm rollback python-app -n test"
+                        error("Test deployment failed! Rolling back Test and stopping pipeline.")
+                    }
+                }
+            }
+        }
+
+        stage('Deploying Application in PROD env') {
+            steps {
+                script {
+                    try{
+                        sh "helm upgrade --install python-app $HELM_CHART_PATH -n prod --set image.tag=$NEW_VERSION"
+                    }
+                    catch (Exception e) {
+                        sh "helm rollback python-app -n prod"
+                        error("Prod deployment failed! Rolling back Prod and stopping pipeline.")
+                    }
                 }
             }
         }
