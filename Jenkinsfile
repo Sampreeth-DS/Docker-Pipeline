@@ -49,6 +49,7 @@ pipeline {
                 withDockerRegistry([credentialsId: DOCKER_CREDENTIALS, url: '']) {
                     sh "docker push $DOCKER_IMAGE:$NEW_VERSION"
                     sh "docker tag $DOCKER_IMAGE:$NEW_VERSION $DOCKER_IMAGE:latest"
+                    sh "docker push $DOCKER_IMAGE:latest"
                     sh "docker rmi $DOCKER_IMAGE:$NEW_VERSION"
                 }
             }
