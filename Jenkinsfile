@@ -26,7 +26,7 @@ pipeline {
                     script {
                         sh """
                             git config --global user.email "sampreethdsgowda@gmail.com"
-                            git config --global user.name "Jenkins CI"
+                            git config --global user.name "Sampreeth"
                             git add version.txt
                             git commit -m "Update version to $NEW_VERSION"
                             git push https://$GIT_USER:$GIT_PASS@github.com/Sampreeth-DS/Docker-Pipeline.git HEAD:main
