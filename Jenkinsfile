@@ -57,7 +57,7 @@ pipeline {
             steps {
                 script {
                     def userInput = input message: "Do you want to deploy this version?", parameters: [
-                        choice(name: 'Approval', choices: ['Approve', 'Reject'], description: 'Select Approve to proceed or Reject to stop.')
+                        choice(choices: ['Approve', 'Reject'], description: 'Select Approve to proceed or Reject to stop.')
                     ]
 
                     if (userInput == 'Reject') {
@@ -71,7 +71,6 @@ pipeline {
             steps {
                 script {
                     sh """
-                        kubectl create namespace dev --dry-run=client -o yaml | kubectl apply -f -
                         helm upgrade --install docker-app $HELM_CHART_PATH -n dev --set image.tag=$NEW_VERSION
                     """
                 }
