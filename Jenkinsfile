@@ -9,6 +9,17 @@ pipeline {
     }
 
     stages {
+
+        stage('Verify k8s configuration') {
+            steps {
+                script {
+                    sh '''
+                    kubectl get nodes
+                    '''
+                }
+            }
+        }
+        
         stage('Clone Git Repository') {
             steps {
                 git branch: 'main', url: 'https://github.com/Sampreeth-DS/Docker-Pipeline.git'
@@ -39,10 +50,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh '''
-                    kubectl config use-context minikube
-                    docker build -t $DOCKER_IMAGE:$NEW_VERSION .
-                    '''
+                    sh "docker build -t $DOCKER_IMAGE:$NEW_VERSION ."
                 }
             }
         }
@@ -54,14 +62,6 @@ pipeline {
                     sh "docker tag $DOCKER_IMAGE:$NEW_VERSION $DOCKER_IMAGE:latest"
                     sh "docker push $DOCKER_IMAGE:latest"
                     sh "docker rmi $DOCKER_IMAGE:$NEW_VERSION"
-                }
-            }
-        }
-
-        stage('Verify k8s configuration') {
-            steps {
-                script {
-                    sh "kubectl get nodes"
                 }
             }
         }
