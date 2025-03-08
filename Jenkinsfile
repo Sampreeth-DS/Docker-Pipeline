@@ -39,7 +39,10 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh "docker build -t $DOCKER_IMAGE:$NEW_VERSION ."
+                    sh '''
+                    kubectl config use-context minikube
+                    docker build -t $DOCKER_IMAGE:$NEW_VERSION .
+                    '''
                 }
             }
         }
