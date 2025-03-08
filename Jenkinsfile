@@ -55,6 +55,14 @@ pipeline {
             }
         }
 
+        stage('Verify k8s configuration') {
+            steps {
+                script {
+                    sh "kubectl get nodes"
+                }
+            }
+        }
+
         stage('Approval for the deployment') {
             steps {
                 script {
